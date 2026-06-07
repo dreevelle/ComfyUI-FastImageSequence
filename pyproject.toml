@@ -1,0 +1,17 @@
+[project]
+name = "comfyui-fast-image-sequence"
+description = "Fast parallel PNG image-sequence saver for ComfyUI. Multithreaded 8/16-bit PNG encoding with first-frame-only metadata — a big speedup over Save Image (Advanced) for video/frame dumps."
+version = "1.0.0"
+license = { file = "LICENSE" }
+readme = "README.md"
+requires-python = ">=3.10"
+# av / numpy / torch are provided by ComfyUI core, so no extra dependencies.
+dependencies = []
+
+[project.urls]
+Repository = "https://github.com/dreevelle/ComfyUI-FastImageSequence"
+
+[tool.comfy]
+PublisherId = "dreevelle"
+DisplayName = "ComfyUI-FastImageSequence"
+Icon = ""
