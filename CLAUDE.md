@@ -93,7 +93,29 @@ table and the `ndim == 2` unsqueeze from upstream.
 
 - Version is duplicated in `__version__` (`__init__.py`) and `[project].version`
   (`pyproject.toml`) — bump both.
-- `dependencies` stays empty: `av`, `numpy`, and `torch` ship with ComfyUI, and
-  the package is installed by cloning into `custom_nodes/`.
+- `dependencies` stays empty: `av`, `numpy`, and `torch` ship with ComfyUI.
 - Respect `args.disable_metadata` (ComfyUI's global CLI flag) alongside the
   node's own `metadata` option in any metadata-related change.
+
+## Releasing
+
+Published on the Comfy Registry as `comfyui-fast-image-sequence` under publisher
+`dreevelle`, which is what makes it installable from ComfyUI-Manager.
+
+**Changing `[project].version` in `pyproject.toml` on `main` publishes a
+release.** `.github/workflows/publish_action.yml` watches that file's path and
+runs `Comfy-Org/publish-node-action`, authenticating with the
+`REGISTRY_ACCESS_TOKEN` repo secret. Don't touch the version field unless a
+release is intended; republishing an existing version fails with
+`400 The node version already exists`.
+
+`.comfyignore` keeps dev-only files (`CLAUDE.md`, `.github/`) out of the
+published archive. `comfy node validate` runs the registry's checks locally and
+`comfy node pack` produces the exact archive that would be uploaded — inspect it
+before releasing if the file list may have changed.
+
+Check what's live:
+
+```bash
+curl -s https://api.comfy.org/nodes/comfyui-fast-image-sequence/versions
+```
