@@ -19,10 +19,25 @@ The node is registered through ComfyUI's **V3 schema API**, not the legacy
 
 - ComfyUI checkout: `/home/dreevelle/comfy/ComfyUI`
 - Python venv (has `av`, `torch`, `numpy`): `/home/dreevelle/comfy-env/bin/python`
-- The installed copy at `/home/dreevelle/comfy/ComfyUI/custom_nodes/ComfyUI-FastImageSequence`
-  is an **independent clone of the same GitHub remote**, not a symlink to this
-  working tree. Changes made here are not live in ComfyUI until they're pushed
-  and pulled there (or copied over).
+- The package is published, and `ComfyUI/custom_nodes/comfyui-fast-image-sequence`
+  (lowercase, the registry id) is a **ComfyUI-Manager install** that tracks
+  registry releases. This working tree is not wired into ComfyUI.
+
+To test a change before releasing it, symlink this tree in under its CamelCase
+name so it doesn't collide with the Manager install:
+
+```bash
+ln -sfn /home/dreevelle/Projects/ComfyUI-FastImageSequence \
+        /home/dreevelle/comfy/ComfyUI/custom_nodes/ComfyUI-FastImageSequence
+```
+
+**Remove that symlink before doing anything in ComfyUI-Manager for this
+package.** Manager's remove/replace path does `shutil.rmtree` on the *resolved*
+path, so it deletes the symlink target's contents instead of unlinking — on
+2026-08-09 that wiped a sibling package's working tree, `.git` included, and it
+had to be restored by re-cloning. Commit and push before any Manager operation,
+and never leave a symlinked dev copy in place while installing or updating the
+published version.
 
 Run ComfyUI:
 
