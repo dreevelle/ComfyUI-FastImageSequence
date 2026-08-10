@@ -30,7 +30,7 @@ import folder_paths
 from comfy.cli_args import args
 from comfy_api.latest import ComfyExtension, IO
 
-__version__ = "1.0.0"
+__version__ = "1.0.1"
 
 
 # ---------------------------------------------------------------------------
