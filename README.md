@@ -26,11 +26,21 @@ every single frame.
 | `bit_depth` | `16-bit` | `8-bit` or `16-bit` PNG. |
 | `metadata` *(advanced)* | `first_frame` | `first_frame` / `all` / `none`. |
 | `threads` *(advanced)* | `0` (auto) | Encoder threads. `0` = `min(8, CPU count)`. |
+| `preview` | `paged` | `paged`: one frame at a time on the node. `off`: no preview. |
 
 Drop it in wherever you'd use Save Image (Advanced). It handles the whole batch
 itself, including the first-frame metadata, so wire the **entire** sequence into
 this one node (don't split it across two save nodes — that would collide on the
 sequential file numbering).
+
+### Preview
+
+The node shows one saved frame at a time, with ◀ ▶ and a slider to step
+through them. Only the frame on screen is loaded, converted to a small WebP by
+ComfyUI's `/view` (a 16-bit 1536 × 864 frame is about 6.7 MB as PNG and about
+125 KB as the preview), plus the next frame so stepping forward is instant.
+Saving a long sequence no longer makes the frontend load every frame into a
+gallery. Set `preview` to `off` to show nothing at all.
 
 ## Performance
 

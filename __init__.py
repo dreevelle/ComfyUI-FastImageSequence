@@ -30,7 +30,11 @@ import folder_paths
 from comfy.cli_args import args
 from comfy_api.latest import ComfyExtension, IO
 
-__version__ = "1.0.1"
+__version__ = "1.1.0"
+
+# The frame pager (web/pager.js) shows one frame at a time; registered by module
+# attribute, not also by [tool.comfy].web, or the frontend loads it twice.
+WEB_DIRECTORY = "./web"
 
 
 # ---------------------------------------------------------------------------
@@ -173,6 +177,16 @@ class SaveImageSequenceFast(IO.ComfyNode):
                     advanced=True,
                     tooltip="Encoder threads. 0 = auto (min(8, CPU count)).",
                 ),
+                IO.Combo.Input(
+                    "preview",
+                    options=["paged", "off"],
+                    default="paged",
+                    tooltip=(
+                        "'paged' shows one frame at a time with a slider, loading only "
+                        "that frame as a small WebP. 'off' shows nothing. Either way "
+                        "the frames are never loaded all at once."
+                    ),
+                ),
             ],
             hidden=[IO.Hidden.prompt, IO.Hidden.extra_pnginfo],
             is_output_node=True,
@@ -180,7 +194,7 @@ class SaveImageSequenceFast(IO.ComfyNode):
 
     @classmethod
     def execute(cls, images, filename_prefix: str, bit_depth: str,
-                metadata: str = "first_frame", threads: int = 0) -> IO.NodeOutput:
+                metadata: str = "first_frame", threads: int = 0, preview: str = "paged") -> IO.NodeOutput:
         output_dir = folder_paths.get_output_directory()
         full_output_folder, filename, counter, subfolder, filename_prefix = (
             folder_paths.get_save_image_path(
@@ -220,7 +234,10 @@ class SaveImageSequenceFast(IO.ComfyNode):
                 # map preserves input order, so results stay frame-ordered.
                 results = list(pool.map(encode_and_write, range(num_images)))
 
-        return IO.NodeOutput(ui={"images": results})
+        # Not under "images": the frontend would load every frame into a gallery.
+        # The pager reads "frames" and fetches only the frame on screen. An empty
+        # list still reaches the pager, so switching to 'off' clears the last run.
+        return IO.NodeOutput(ui={"frames": results if preview == "paged" else []})
 
 
 class FastImageSequenceExtension(ComfyExtension):
